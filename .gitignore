@@ -1,0 +1,5 @@
+*.o
+*.swp
+tags
+.gdb_history
+peda-session*
