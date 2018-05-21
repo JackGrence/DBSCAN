@@ -5,6 +5,7 @@ from PIL import Image
 
 
 def main():
+    global k
     if len(sys.argv) < 4:
         print('Usage: python3 dbscan.py image.bmp r min_pts')
         return
@@ -12,7 +13,7 @@ def main():
     rgb_im = img.convert('RGB')
     dbscan(rgb_im, int(sys.argv[2]), int(sys.argv[3]))
 
-    rgb_im.save('output.bmp')
+    rgb_im.save('output_' + str(k) + '_' + str(int(time.time())) + '.bmp')
 
 
 def dbscan(rgb_im, r, min_pts):
