@@ -25,16 +25,17 @@ def dbscan(rgb_im, r, min_pts):
             if pixdata[i, j] == (0, 0, 0):
                 black_pos.append([i, j])
     # scan all black_pixel
-    state = {}
+    state = [[False
+              for i in range(rgb_im.size[0])] for j in range(rgb_im.size[1])]
     for pos in black_pos:
-        if str(pos) in state:
+        if state[pos[1]][pos[0]]:
             continue
         # haven't scanned yet
         # new clustering or noise
         # scan whole circle
         new_clustering_ary = scan_circle(pos, rgb_im, pixdata, r)
 
-        state[str(pos)] = 1
+        state[pos[1]][pos[0]] = True
         if len(new_clustering_ary) >= min_pts:
             # new clustering
             k += 1
@@ -47,11 +48,11 @@ def dbscan(rgb_im, r, min_pts):
             # clustering until empty
             while new_clustering_ary:
                 pos = new_clustering_ary.pop()
-                if str(pos) in state:
+                if state[pos[1]][pos[0]]:
                     continue
                 pixdata[pos[0], pos[1]] = color[k - 1]
                 in_circle_ary = scan_circle(pos, rgb_im, pixdata, r)
-                state[str(pos)] = 1
+                state[pos[1]][pos[0]] = True
                 if len(in_circle_ary) >= min_pts:
                     new_clustering_ary.extend(in_circle_ary)
 
@@ -69,10 +70,6 @@ def scan_circle(pos, rgb_im, pixdata, r):
             if pixdata[i, j] == (255, 255, 255):
                 continue
             # pixel is black
-            #distance_square = pow(i - pos[0], 2)
-            #distance_square += pow(j - pos[1], 2)
-            #if distance_square <= r ** 2:
-            #    in_circle_ary.append([i, j])
             in_circle_ary.append([i, j])
     return in_circle_ary
 
@@ -84,4 +81,5 @@ if __name__ == '__main__':
     color = []
     start = time.time()
     main()
+    print('clustering num:', k)
     print("it took", time.time() - start, "seconds.")
